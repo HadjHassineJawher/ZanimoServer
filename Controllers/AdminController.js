@@ -2,11 +2,11 @@ const express = require('express');
 const { isValidObjectId } = require('mongoose');
 var router = express.Router();
 
-var { Users } = require('../Models/Users');
+var { Admins } = require('../Models/Admin');
 
 //retriving all data from database
 router.get('/', (req, res) => {
-    Users.find((err, docs) => {
+    Admins.find((err, docs) => {
         if (!err) {
             res.send(docs);
         } else {
@@ -15,14 +15,13 @@ router.get('/', (req, res) => {
     });
 })
 
-
 // retriving a data from database with a given id
 router.get('/:id', (req, res) => {
     if (!isValidObjectId(req.params.id)) {
         return res.status(400).send(`No record with Given Id: ${req.params.id}`);
     }
 
-    Users.findById(req.params.id, (err, doc) => {
+    Admins.findById(req.params.id, (err, doc) => {
         if (!err) {
             res.send(doc);
         } else {
@@ -37,7 +36,7 @@ router.delete('/:id', (req, res) => {
         return res.status(400).send(`No record with Given Id: ${req.params.id}`);
     }
 
-    Users.findByIdAndRemove(req.params.id, (err, doc) => {
+    Admins.findByIdAndRemove(req.params.id, (err, doc) => {
         if (!err) {
             res.send(doc);
         } else {
@@ -49,18 +48,17 @@ router.delete('/:id', (req, res) => {
 // posting data in the database
 router.post('/', (req, res) => {
 
-    var user = new Users({
+    var admin = new Admins({
         nom: req.body.nom,
         prenom: req.body.prenom,
-        imageuser: req.body.imageuser,
+        image: req.body.image,
         mail: req.body.mail,
         numtel: req.body.numtel,
+        image: req.body.image,
         motdepasse: req.body.motdepasse,
-        status: req.body.status,
-        posts: req.body.posts,
     })
 
-    user.save((err, doc) => {
+    admin.save((err, doc) => {
         if (!err) {
             res.send(doc);
         } else {
@@ -76,22 +74,20 @@ router.patch('/:id', (req, res) => {
         return res.status(400).send(`No record with Given Id: ${req.params.id}`);
     }
 
-    var user = {
+    var Admin = {
         nom: req.body.nom,
         prenom: req.body.prenom,
-        imageuser: req.body.imageuser,
         mail: req.body.mail,
         numtel: req.body.numtel,
+        image: req.body.image,
         motdepasse: req.body.motdepasse,
-        status: req.body.status,
-        posts: req.body.posts,
-    }
+    };
 
-    Users.findByIdAndUpdate(req.params.id, { $set: user }, { new: true }, (err, doc) => {
+    Admins.findByIdAndUpdate(req.params.id, { $set: Admin }, { new: true }, (err, doc) => {
         if (!err) {
             res.send(doc);
         } else {
-            console.log('Error in Updating Data from Users :' + JSON.stringify(err, undefined, 2));
+            console.log('Error in Updating Data from Admin :' + JSON.stringify(err, undefined, 2));
         }
     });
 });
