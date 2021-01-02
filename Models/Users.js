@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+/*  ---------------------- Comment Schema  ---------------------- */
+
 const CommentSchema = new Schema({
     comment: { type: String }
 })
 
-const PostShema = new Schema({
+/*  ---------------------- Post Schema  ---------------------- */
+
+const PostSchema = new Schema({
     image: { type: String, required: true },
     date: { type: String },
     description: { type: String, required: true },
@@ -16,16 +20,18 @@ const PostShema = new Schema({
     comments: [CommentSchema]
 })
 
-const UserShema = new Schema({
+/*  ---------------------- User Schema  ---------------------- */
+
+const UserSchema = new Schema({
     nom: { type: String, required: true },
     prenom: { type: String, required: true },
     imageuser: { type: String },
-    mail: { type: String, required: true },
-    numtel: { type: String },
+    mail: { type: String, required: true, unique: true, dropDups: true },
+    numtel: { type: String, unique: true, dropDups: true },
     motdepasse: { type: String, required: true },
     status: { type: Boolean },
-    posts: [PostShema]
+    posts: [PostSchema]
 })
 
-const Users = mongoose.model('Users', UserShema)
+const Users = mongoose.model('Users', UserSchema)
 module.exports = { Users };

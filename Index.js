@@ -8,12 +8,16 @@ var AdminController = require('./Controllers/AdminController.js');
 
 var app = express();
 app.use(bodyParser.json());
-
 app.use(cors({ origin: 'http://localhost:4200' }));
 
+/*  ----------------------  User Collection  ---------------------- */
 app.use('/Users', UserController);
+/*  ----------------------  Admin Collection  ---------------------- */
 app.use('/Admins', AdminController);
 
-app.listen(3030, () => {
-    console.log('Server started at Port: 3030');
+/*  ----------------------  Server  ---------------------- */
+var ServerPort = 3030;
+app.listen(ServerPort, () => {
+    console.log(' Welcome to Zanimo BackEnd Server ');
+    console.log(` Server Started at Port : ${ServerPort}`);
 })

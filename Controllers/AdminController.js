@@ -1,7 +1,6 @@
 const express = require('express');
 const { isValidObjectId } = require('mongoose');
 var router = express.Router();
-
 var { Admins } = require('../Models/Admin');
 
 //retriving all data from database
@@ -48,7 +47,7 @@ router.delete('/:id', (req, res) => {
 // posting data in the database
 router.post('/', (req, res) => {
 
-    var admin = new Admins({
+    var Admin = new Admins({
         nom: req.body.nom,
         prenom: req.body.prenom,
         image: req.body.image,
@@ -58,7 +57,7 @@ router.post('/', (req, res) => {
         motdepasse: req.body.motdepasse,
     })
 
-    admin.save((err, doc) => {
+    Admin.save((err, doc) => {
         if (!err) {
             res.send(doc);
         } else {
@@ -68,7 +67,7 @@ router.post('/', (req, res) => {
 })
 
 
-// updating a user 
+// Updating admin
 router.patch('/:id', (req, res) => {
     if (!isValidObjectId(req.params.id)) {
         return res.status(400).send(`No record with Given Id: ${req.params.id}`);
