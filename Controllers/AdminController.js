@@ -24,7 +24,7 @@ router.get('/:id', (req, res) => {
         if (!err) {
             res.send(doc);
         } else {
-            console.log('Error in Retriving Data from Users :' + JSON.stringify(err, undefined, 2));
+            console.log('Error in Retriving Data from Admins :' + JSON.stringify(err, undefined, 2));
         }
     })
 })
@@ -65,7 +65,6 @@ router.post('/', (req, res) => {
         }
     })
 })
-
 
 // Updating admin
 router.patch('/:id', (req, res) => {

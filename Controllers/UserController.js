@@ -3,6 +3,7 @@ const { isValidObjectId } = require('mongoose');
 const jwt = require('jsonwebtoken');
 
 var router = express.Router();
+
 var { Users } = require('../Models/Users');
 var { Admins } = require('../Models/Admin');
 
@@ -18,6 +19,7 @@ router.get('/', (req, res) => {
         }
     });
 })
+
 
 /*  ----------------------  User Operations  ---------------------- */
 
@@ -99,7 +101,61 @@ router.patch('/OneUser/:id', (req, res) => {
     });
 });
 
+//Authentification User returning Json File 
+router.post('/AuthUser', (req, res) => {
+    userr = req.body;
+    Users.findOne({ mail: userr.mail, motdepasse: userr.motdepasse }, (err, User) => {
+        if (!err) {
+            if (!User) {
+                res.status(401).send('Invalid E-mail');
+            } else if (User.motdepasse !== userr.motdepasse) {
+                res.status(401).send('Invalid password');
+            } else {
+                /* var mail = User.mail;
+                 var motdepasse = User.motdepasse;*/
+                res.status(200).send(User);
+            }
+        } else {
+            console.log('Error in Retriving Data from Users :' + JSON.stringify(err, undefined, 2));
+        }
+    })
+})
+
 /*  ----------------------  Post Operations  ---------------------- */
+
+// lOST Animals API
+router.get('/LostPosts',(req,res)=>{
+    Users.find({'posts.typeAnnonce':'Perdu'},(err,doc)=>{
+        if(!err){
+                res.send(doc);
+        }else {
+            console.log('Error in Retriving Data :' + JSON.stringify(err, undefined, 2));
+        }
+    })
+})
+
+// Found Animals API
+router.get('/FoundPosts',(req,res)=>{
+    Users.find({'posts.typeAnnonce':'Trouver'},(err,doc)=>{
+        if(!err){
+                res.send(doc);
+        }else {
+            console.log('Error in Retriving Data :' + JSON.stringify(err, undefined, 2));
+        }
+    })
+})
+
+// Adopt Animals API
+router.get('/AdoptPosts',(req,res)=>{
+    Users.find({'posts.typeAnnonce':'Adopter'},(err,doc)=>{
+        if(!err){
+                res.send(doc);
+        }else {
+            console.log('Error in Retriving Data :' + JSON.stringify(err, undefined, 2));
+        }
+    })
+})
+
 
 // Searching Specific Post with User Id and Post Id
 router.get('/OnePost/:id/:idd', (req, res) => {
@@ -371,40 +427,6 @@ router.get('/FilterUsers', (req, res) => {
         })
 })
 
-
-/*  ----------------------  API In Progress  ---------------------- */
-
-// Filtering Posts by Animal's Type --> Returnig the WHOLE doc !?
-router.get('/FilterPosts', (req, res) => {
-    const SearchField = req.query.typeAnimale;
-    Users.find({ 'posts.typeAnimale': { $regex: SearchField, $options: 'i' } }, { "posts.comments": 0 })
-        .then(doc => {
-            res.send(doc);
-        })
-})
-
-router.get('/FilterPosts', (req, res) => {
-    const SearchField = req.query.typeAnimale;
-    Users.find().forEach()
-        .then(doc => {
-            res.send(doc);
-        })
-})
-
-//Get only specific posts 
-router.get('/onlypostsapi', (req, res) => {
-    Users.find({}, (err, doc) => {
-        if (!err) {
-            for (var i = 0; i < doc.length; i++) {
-                console.log(doc[i].posts)
-                //res.send(doc[i].posts)
-            }
-        } else {
-            console.log('Error in Retriving Post:' + JSON.stringify(err, undefined, 2));
-        }
-    })
-})
-
 /*  ---------------------- Admin Authentification and Authorization ---------------------- */
 
 //Admin login Authentification
@@ -424,6 +446,7 @@ router.post('/Admin/Authentification', (req, res) => {
                 else {
                     let payload = { subject: Admin._id }
                     let token = jwt.sign(payload, 'SecretKey', { expiresIn: '24h' })
+                    //console.log({ payload })
                     res.status(200).send({ token })
                 }
     })
@@ -449,4 +472,61 @@ function VerifiyToken(req, res, next) {
     req.AdminId = payload.subject;
     next();
 }
+
+/*  /////////////////////////////// API In Progress  ///////////////////////////////  */
+
+/*  ---------------  Filter Operations  ---------------- */
+
+// Filtering Users by Name
+router.get('/FilterUsers', (req, res) => {
+    const SearchField = req.query.nom;
+    Users.find({ nom: { $regex: SearchField, $options: 'i' } }, { "posts": 0 })
+        .then(doc => {
+            res.send(doc)
+        })
+})
+
+// Filtering Posts by Animal's Type --> Returnig the WHOLE doc !?
+router.get('/FilterPosts', (req, res) => {
+    const SearchField = req.query.typeAnimale;
+    Users.find({ 'posts.typeAnimale': { $regex: SearchField, $options: 'i' } }, { "posts.comments": 0 })
+        .then(doc => {
+            res.send(doc);
+        })
+})
+/*
+router.get('/OnlyPosts', (req, res) => {
+    Users.find((err, doc) => {
+        if (!err) {
+            for (var i = 0; i < doc.length; i++) {
+                //console.log(doc[i].posts);
+                var a = doc[i].posts;
+                let arr = [];
+                arr.push(a)
+                res.send.json({ arr });
+                //res.send(doc[i].posts)
+            }
+
+        } else {
+            console.log('Error in Removing Data from Users :' + JSON.stringify(err, undefined, 2));
+        }
+    })
+})
+
+//Get only specific posts 
+router.get('/onlypostsapi', (req, res) => {
+    Users.find({}, (err, doc) => {
+        if (!err) {
+            for (var i = 0; i < doc.length; i++) {
+                console.log(doc[i].posts)
+                //res.send(doc[i].posts)
+            }
+        } else {
+            console.log('Error in Retriving Post:' + JSON.stringify(err, undefined, 2));
+        }
+    })
+})
+*/
+
+
 module.exports = router;
